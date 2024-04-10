@@ -8,4 +8,6 @@
 
 2.93-97
 
+## Section 3.5.2 - Infinite Streams
 
+3.59-3.62: They were too math-heavy, didn't want to slow down

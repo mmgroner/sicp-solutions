@@ -9,11 +9,20 @@
       (stream-car s)
       (stream-ref (stream-cdr s) (- n 1))))
 
-(define (stream-map proc s)
+(define (stream-map-simple proc s)
   (if (stream-null? s)
       the-empty-stream
       (cons-stream (proc (stream-car s))
-                   (stream-map proc (stream-cdr s)))))
+                   (stream-map-simple proc (stream-cdr s)))))
+
+; from 3.50
+(define (stream-map proc . argstreams)
+  (if (stream-null? (car argstreams))
+      the-empty-stream
+      (cons-stream
+       (apply proc (map stream-car argstreams))
+       (apply stream-map
+              (cons proc (map stream-cdr argstreams))))))
 
 (define (stream-for-each proc s)
   (if (stream-null? s)
@@ -44,7 +53,7 @@
   (define (step s n)
     (cond ((stream-null? s) (newline))
           ((< n 10) (begin
-                      (display (stream-car s))
+                      (display (stream-car s)) (display " ")
                       (step (stream-cdr s) (+ n 1))))
           (else '...)))
   (step stream 0))
