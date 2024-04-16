@@ -1,27 +1,22 @@
 #lang sicp
 (#%require "streams.scm")
+(#%require "infinite-streams.scm")
 (#%provide (all-defined))
 
-(define (integers-starting-from n)
-  (cons-stream n (integers-starting-from (+ n 1))))
 (define (square x) (* x x))
 
 (define (add-streams s1 s2) (stream-map + s1 s2))
 
-(define integers (cons-stream 1 (add-streams ones integers)))
+(define integers-implicit (cons-stream 1 (add-streams ones integers)))
 ; (ss integers)
 
-(define fibs
+(define fibs-implicit
   (cons-stream 0
                (cons-stream 1
                             (add-streams
                              (stream-cdr fibs)
                              fibs))))
-; (ss fibs)
 
-(define (scale-stream stream factor)
-  (stream-map (lambda (x) (* x factor))
-              stream))
 (define double (scale-stream integers 2))
 ; (ss double)
 
@@ -29,7 +24,6 @@
   (cons-stream
    2
    (stream-filter prime? (integers-starting-from 3))))
-(define (divisible? x y) (= (remainder x y) 0))
 ; the recursive call to primes is in here
 (define (prime? x)
   (define (iter ps)

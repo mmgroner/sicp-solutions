@@ -49,14 +49,23 @@
 (define (display-line x) (newline) (display x))
 
 ; show stream
-(define (ss stream)
-  (define (step s n)
-    (cond ((stream-null? s) (newline))
-          ((< n 10) (begin
-                      (display (stream-car s)) (display " ")
-                      (step (stream-cdr s) (+ n 1))))
-          (else '...)))
-  (step stream 0))
+(define (ss stream . limit)
+  (let ((end (if (not (null? limit)) (car limit) 10)))
+    (define (step s n)
+      (cond ((stream-null? s) (newline))
+            ((< n end) (begin
+                         (display (stream-car s)) (newline)
+                         (step (stream-cdr s) (+ n 1))))
+            (else '...)))
+    (step stream 0)))
 
 ; some common streams to play with
 (define ones (cons-stream 1 ones))
+(define integers (cons-stream 1 (stream-map + ones integers)))
+(define (integers-starting-from n)
+  (cons-stream n (integers-starting-from (+ n 1))))
+
+(define (scale-stream s factor) (stream-map (lambda (x) (* x factor)) s))
+
+(define (partial-sums s)
+  (cons-stream (stream-car s) (stream-map + (partial-sums s) (stream-cdr s))))

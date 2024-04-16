@@ -2,11 +2,6 @@
 (#%require "streams.scm")
 (#%provide (all-defined))
 
-(define (integers-starting-from n)
-  (cons-stream n (integers-starting-from (+ n 1))))
-(define integers (integers-starting-from 1))
-; (ss integers)
-
 (define (fibgen a b) (cons-stream a (fibgen b (+ a b))))
 (define fibs (fibgen 0 1))
 ; (ss fibs)
@@ -19,5 +14,5 @@
            (lambda (x)
              (not (divisible? x (stream-car stream))))
            (stream-cdr stream)))))
-(define primes (sieve (integers-starting-from 2)))
-; (ss primes)
+(define primes-sieve (sieve (integers-starting-from 2)))
+; (ss primes-sieve)
