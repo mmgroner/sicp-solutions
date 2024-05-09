@@ -57,7 +57,7 @@
                          (display (stream-car s)) (newline)
                          (step (stream-cdr s) (+ n 1))))
             (else '...)))
-    (step stream 0)))
+    (step stream 1)))
 
 ; some common streams to play with
 (define ones (cons-stream 1 ones))
