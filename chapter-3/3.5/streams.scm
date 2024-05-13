@@ -59,6 +59,11 @@
             (else '...)))
     (step stream 1)))
 
+(define (ss-map proc s limit)
+  (if (or (stream-null? s) (= limit 0))
+      the-empty-stream
+      (cons (proc (stream-car s)) (ss-map proc (stream-cdr s) (- limit 1)))))
+
 ; some common streams to play with
 (define ones (cons-stream 1 ones))
 (define integers (cons-stream 1 (stream-map + ones integers)))
@@ -69,3 +74,8 @@
 
 (define (partial-sums s)
   (cons-stream (stream-car s) (stream-map + (partial-sums s) (stream-cdr s))))
+
+(define (stream->list s n)
+  (if (or (stream-null? s) (= n 0))
+      '()
+      (cons (stream-car s) (stream->list (stream-cdr s) (- n 1)))))
