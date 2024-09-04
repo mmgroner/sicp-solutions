@@ -11,3 +11,7 @@
 ## Section 3.5.2 - Infinite Streams
 
 3.59-3.62: They were too math-heavy, didn't want to slow down
+
+## Section 3.5.5 - Modularity of Functional Programs and Modularity of Objects
+
+3.81-2: Was eager to move on to Chapter 4
