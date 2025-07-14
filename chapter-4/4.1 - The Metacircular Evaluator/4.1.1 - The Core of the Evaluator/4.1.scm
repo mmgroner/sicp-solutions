@@ -1,12 +1,18 @@
-#lang sicp
+; Define a list-of-values that always takes arguments left to right and a version that always takes right to left
 
-; list-of-values that always takes left-to-right
-(define (list-of-values exps env)
-  (if (no-operands? exps)
-      '()
-      (cons (eval (car exps) env)
-            (list-of-values (cdr exps) env))))
+; list-of-values uses first-value and rest-of-values to get the arguments. Defining each version is a matter of defining those 2 procedures
 
-; list-of-values that always takes right-to-left
-(define (list-of-values-rtl exps env)
-  (list-of-values (reverse list-of-values exps) env))
+; left to right
+(define (first-operands exps)
+   (car exps))
+
+(define (rest-of-values exps)
+   (cdr exps))
+
+
+; right-to-left
+(define (first-operand exps)
+  (car (reverse exps))
+
+(define (rest-of-values exps)
+  (cdr (reverse exps))
