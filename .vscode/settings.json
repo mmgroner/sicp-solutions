@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "*.scm": "racket"
+    },
+    "[racket]": {
+        "editor.rulers": [
+            102
+        ],
+        "editor.wordSeparators": "()[]{}\",'`;#|",
+    }
+}
