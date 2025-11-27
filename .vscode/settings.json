@@ -1,6 +1,7 @@
 {
     "files.associations": {
-        "*.scm": "racket"
+        "*.scm": "racket",
+        "*.rkt": "racket"
     },
     "[racket]": {
         "editor.rulers": [
