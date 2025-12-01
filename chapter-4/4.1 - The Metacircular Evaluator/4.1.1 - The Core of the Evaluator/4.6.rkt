@@ -1,6 +1,7 @@
 #lang racket
 (provide let->combination)
 (provide let?)
+(provide let-definitions-clause let-body let-parameters let-argument-expressions make-lambda)
 
 ; get the definitions part of the let construct
 (define (let-definitions-clause exp)
