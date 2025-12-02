@@ -6,11 +6,14 @@
 
 (define (make-let definitions body)
     (cons 'let 
-        (cons definitions body))
+        (cons definitions body)))
 
 (define (let*->nested-lets exp)
     (define definitions-clause (let-definitions-clause exp))
-    (if (is-last-definition? definitions-clause)
-        exp
-        (make-let (list (car definitions-clause))
-            (let*->nested-lets (make-let (cdr definitions-clause) (let-body exp))))))
+    (define body (let-body exp))
+    (cond ((null? definitions-clause) (make-let definitions-clause body))
+          ((is-last-definition? definitions-clause) exp)
+          (else 
+            (make-let (list (car definitions-clause))
+                (list (let*->nested-lets (make-let (cdr definitions-clause) (let-body exp))))))))
+    
