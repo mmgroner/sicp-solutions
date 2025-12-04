@@ -25,17 +25,17 @@
 (define (make-lambda parameters body)
   (cons 'lambda (cons parameters body)))
 
-(define (make-let-body exp)
-  (if (is-named-let? exp)
-    (list
-      (cons 'define
-        (cons
-          (cons (named-let-name exp) (let-parameters (let-definitions-clause exp)))
-            (let-body exp)))
-      (cons (named-let-name exp) (let-parameters (let-definitions-clause exp))))
-    (let-body exp)))
+(define (create-named-let exp)
+  (list 'let '()
+    (cons 'define
+      (cons
+        (cons (named-let-name exp) (let-parameters (let-definitions-clause exp)))
+        (let-body exp)))
+    (cons (named-let-name exp) (let-argument-expressions (let-definitions-clause exp)))))
 
 (define (let->combination exp)
   (define definitions-clause (let-definitions-clause exp))
-  (cons (make-lambda (let-parameters definitions-clause) (make-let-body exp))
-        (let-argument-expressions definitions-clause)))
+  (if (is-named-let? exp)
+    (create-named-let exp)
+    (cons (make-lambda (let-parameters definitions-clause) (let-body exp))
+          (let-argument-expressions definitions-clause))))

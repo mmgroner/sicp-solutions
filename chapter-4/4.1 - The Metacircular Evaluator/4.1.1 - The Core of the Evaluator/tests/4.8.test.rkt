@@ -25,12 +25,9 @@
             (fib-iter (+ a b) a (- count 1)))))
 
 (check-equal? (let->combination named-let-expression)
-    (cons
-        (list 'lambda '(a b count) 
-                        '(define (fib-iter a b count)
-                            (if (= count 0)
-                                b
-                                (fib-iter (+ a b) a (- count 1))))
-                        '(fib-iter a b count))
-        (list 1 0 'n)))
-        
+    (list 'let '()
+        '(define (fib-iter a b count)
+            (if (= count 0)
+                b
+                (fib-iter (+ a b) a (- count 1))))
+        '(fib-iter 1 0 n)))
