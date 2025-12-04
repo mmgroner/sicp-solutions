@@ -23,8 +23,7 @@
         (if (= count 0)
             b
             (fib-iter (+ a b) a (- count 1)))))
-; TODO: Read https://docs.scheme.org/schintro/schintro_66.html#SEC73
-; Then update test before actually implementing the chance
+
 (check-equal? (let->combination named-let-expression)
     (cons
         (list 'lambda '(a b count) 

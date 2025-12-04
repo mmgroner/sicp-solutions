@@ -4,6 +4,8 @@
 
 (define (is-named-let? exp) (symbol? (cadr exp)))
 
+(define (named-let-name exp) (cadr exp))
+
 (define (let-definitions-clause exp)
   (if (is-named-let? exp)
       (caddr exp)
@@ -23,7 +25,17 @@
 (define (make-lambda parameters body)
   (cons 'lambda (cons parameters body)))
 
+(define (make-let-body exp)
+  (if (is-named-let? exp)
+    (list
+      (cons 'define
+        (cons
+          (cons (named-let-name exp) (let-parameters (let-definitions-clause exp)))
+            (let-body exp)))
+      (cons (named-let-name exp) (let-parameters (let-definitions-clause exp))))
+    (let-body exp)))
+
 (define (let->combination exp)
   (define definitions-clause (let-definitions-clause exp))
-  (cons (make-lambda (let-parameters definitions-clause) (let-body exp))
+  (cons (make-lambda (let-parameters definitions-clause) (make-let-body exp))
         (let-argument-expressions definitions-clause)))
