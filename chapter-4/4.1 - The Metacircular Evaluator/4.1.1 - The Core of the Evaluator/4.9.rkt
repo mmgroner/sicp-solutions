@@ -1,4 +1,5 @@
 #lang racket
+(provide do->combination)
 ; syntax
 ; (do <proc> <condition>)
 ; (while <condition> <proc>)
@@ -38,22 +39,11 @@
 ;     (loop))
 
 (define (do->combination exp)
-    (define proc (cadr exp))
-    (define cond (caddr exp))
+  (define proc (cadr exp))
+  (define pred (caddr exp))
     
-    (let ()
-        (define (loop)
-            (proc)
-            (if cond proc 'done))
-        (loop)))
-
-(define (while->combination exp)
-    (define cond (cadr exp))
-    (define proc (caddr exp))
-    
-    (define (loop)
-        (if cond (loop) 'done))
-    
-    (loop))
-
-(define (for->combination ))
+  (list 'let 'loop
+        (list (list 'proc proc)
+              (list 'pred pred))
+        '(proc)
+        '(if (pred) (loop) 'done)))
