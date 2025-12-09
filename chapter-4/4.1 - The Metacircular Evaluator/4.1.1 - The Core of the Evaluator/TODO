@@ -1,5 +1,0 @@
-In 4.6 tests, add a test for a multi-line let body, e.g.
-
-(let ((x 5) (y 10))
-    (display x)
-    (+ x y))
