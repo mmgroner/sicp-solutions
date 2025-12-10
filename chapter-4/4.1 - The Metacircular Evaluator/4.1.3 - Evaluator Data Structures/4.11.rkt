@@ -1,4 +1,4 @@
-#lang racket
+#lang sicp
 #|
 4.11
 
@@ -8,65 +8,81 @@ each binding is a name-value pair. Rewrite the environment
 operations to use this alternative representation.
 |#
 
+; An environment is a list of frames
+(define (enclosing-environement env) (cdr env))
+(define (first-frame env) (car env))
+(define the-empty-environment '())
+
 ; Each Frame is a list of pairs
-(define (make-frame variables values)
-  (if (null? variables)
-    '()
-    (cons (cons (car variables) (car values)) (make-frame (cdr variables) (cdr values)))))
+(define (make-binding var val) (cons var val))
+(define (binding-var binding) (car binding))
+(define (binding-val binding) (cdr binding))
+(define (make-frame bindings) bindings)
 
-; TODO: modify the other procedures below
-
-(define (frame-variables frame) (car frame))
-(define (frame-values frame) (cdr frame))
-(define (add-binding-to-frame! var val frame)
-  (set-car! frame (cons var (car frame)))
-  (set-cdr! frame (cons val (cdr frame))))
+(define (first-binding frame) (car frame))
+(define (rest-of-bindings frame) (cdr frame))
+(define (first-var frame) (car (first-binding frame)))
+(define (first-val frame) (cdr (first-binding frame)))
+(define (set-binding-val! binding val) (set-cdr! binding val))
+(define (add-binding-to-frame! binding frame)
+  (set-car! frame (cons binding frame)))
 
 
 ; Extending environments with a new frame
-(define (extend-environment vars vals base-env)
-  (if (= (length vars) (length vals))
-      (cons (make-frame vars vals) base-env)
-      (if (< (length vars) (length vals))
-          (error "Too many arguments supplied" vars vals)
-          (error "Too few arguments supplied" vars vals))))
+(define (extend-environment bindings base-env)
+  (cons (make-frame bindings) base-env))
 
 ; Looking up a variable
 (define (lookup-variable-value var env)
   (define (env-loop env)
-    (define (scan vars vals)
-      (cond ((null? vars)
+    (define (scan frame)
+      (cond ((null? frame)
               (env-loop (enclosing-environement env)))
-            ((eq? var (car vars)) (car vals))
-            (else (scan (cdr vars) (cdr vals))))
+            ((eq? var (first-var frame)) (first-val frame))
+            (else (scan (rest-of-bindings frame)))))
     (if (eq? env the-empty-environment)
         (error "Unbound variable" var)
-        (let ((frame (first-frame env)))
-          (scan (frame-variables frame)
-                (frame-values frame))))))
+        (scan (first-frame env))))
     (env-loop env))
 
 ; Setting a variable (aka adjusting an existing variable's value)
 (define (set-variable-value! var val env)
   (define (env-loop env)
-    (define (scan vars vals)
-      (cond ((null? vars)
+    (define (scan frame)
+      (cond ((null? frame)
               (env-loop (enclosing-environement env)))
-            ((eq? var (car cars)) (set-car! vals val))
-            (else (scan (cdr vars) (cdr vals)))))
+            ((eq? var (first-var frame)) (set-binding-val! (first-binding frame) val))
+            (else (scan (rest-of-bindings frame)))))
     (if (eq? env the-empty-environment)
         (error "Unbound variable: SET!" var)
-        (let ((frame (first-frame env))
-            (scan (frame-variables frame)
-                (frame-values frame))))))
+        (scan (first-frame env))))
     (env-loop env))
 
 ; Defining a new variable
 (define (define-variable! var val env)
   (let ((frame (first-frame env)))
-    (define (scan vars vals)
-      (cond ((null? vars) (add-binding-to-frame! var val frame))
-            ((eq? var (car vars)) (set-car! vals val))
-            (else (scan (cdr vars) (cdr vals)))))
-    (scan (frame-variables frame)
-          (frame-values frame))))
+    (define (scan bindings)
+      (cond ((null? bindings) (add-binding-to-frame! (make-binding var val) frame))
+            ((eq? var (binding-var (first-binding bindings)))
+              (set-binding-val! (first-binding bindings) val))
+            (else (scan (rest-of-bindings frame)))))
+    (scan frame)))
+
+; tests
+(define base-env the-empty-environment)
+(define bindings (list (make-binding 'x 1) (make-binding 'y 2)))
+(define env1 (extend-environment bindings base-env))
+; (eq? (lookup-variable-value 'x env1) 1)
+; (eq? (lookup-variable-value 'y env1) 2)
+
+(define new-bindings (list (make-binding 'x 3) (make-binding 'y 4)))
+(define env2 (extend-environment new-bindings env1))
+; (eq? (lookup-variable-value 'x env2) 3)
+; (eq? (lookup-variable-value 'y env2) 4)
+(set-variable-value! 'x 5 env2)
+; (eq? (lookup-variable-value 'x env2) 5)
+; TODO: define-variable runs indefinitely
+(define-variable! 'z 6 env2)
+(eq? (lookup-variable-value 'z env2) 6)
+(define-variable! 'y 7 env2)
+(eq? (lookup-variable-value 'y env2) 7)
