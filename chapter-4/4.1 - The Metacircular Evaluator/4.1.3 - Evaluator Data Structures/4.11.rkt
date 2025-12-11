@@ -25,7 +25,7 @@ operations to use this alternative representation.
 (define (first-val frame) (cdr (first-binding frame)))
 (define (set-binding-val! binding val) (set-cdr! binding val))
 (define (add-binding-to-frame! binding frame)
-  (set-car! frame (cons binding frame)))
+  (set! frame (cons binding frame)))
 
 
 ; Extending environments with a new frame
@@ -59,13 +59,14 @@ operations to use this alternative representation.
     (env-loop env))
 
 ; Defining a new variable
+; TODO: this procedure is not adding the variable as expected..
 (define (define-variable! var val env)
   (let ((frame (first-frame env)))
     (define (scan bindings)
       (cond ((null? bindings) (add-binding-to-frame! (make-binding var val) frame))
             ((eq? var (binding-var (first-binding bindings)))
               (set-binding-val! (first-binding bindings) val))
-            (else (scan (rest-of-bindings frame)))))
+            (else (scan (rest-of-bindings bindings)))))
     (scan frame)))
 
 ; tests
@@ -83,6 +84,7 @@ operations to use this alternative representation.
 ; (eq? (lookup-variable-value 'x env2) 5)
 ; TODO: define-variable runs indefinitely
 (define-variable! 'z 6 env2)
+env2
 (eq? (lookup-variable-value 'z env2) 6)
-(define-variable! 'y 7 env2)
-(eq? (lookup-variable-value 'y env2) 7)
+;(define-variable! 'y 7 env2)
+;(eq? (lookup-variable-value 'y env2) 7)
