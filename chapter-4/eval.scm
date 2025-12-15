@@ -221,7 +221,7 @@
 ; Environments
 
 ; An environment is a list of frames
-(define (enclosing-environement env) (cdr env))
+(define (enclosing-environment env) (cdr env))
 (define (first-frame env) (car env))
 (define the-empty-environment '())
 
@@ -249,7 +249,7 @@
   (define (env-loop env)
     (define (scan vars vals)
       (cond ((null? vars)
-              (env-loop (enclosing-environement env)))
+              (env-loop (enclosing-environment env)))
             ((eq? var (car vars)) (car vals))
             (else (scan (cdr vars) (cdr vals))))
     (if (eq? env the-empty-environment)
@@ -264,7 +264,7 @@
   (define (env-loop env)
     (define (scan vars vals)
       (cond ((null? vars)
-              (env-loop (enclosing-environement env)))
+              (env-loop (enclosing-environment env)))
             ((eq? var (car cars)) (set-car! vals val))
             (else (scan (cdr vars) (cdr vals)))))
     (if (eq? env the-empty-environment)
