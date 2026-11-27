@@ -1,4 +1,10 @@
 #lang sicp
+#|
+I am putting a copy of the evaluator as it is found
+and working in this section here for posterity, as
+I'm not sure how the evaluator will be modified in future
+sections of the book.
+|#
 
 ;;; The Metacircular Evaluator
 ;
@@ -38,6 +44,7 @@
                                        env))
         ((begin? exp) (eval-sequence (begin-actions exp) env))
         ((cond? exp) (eval (cond->if exp) env))
+	((let? exp) (eval (let->combination exp) env))
         ((application? exp)
          (mc-apply (eval (operator exp) env)
                    (list-of-values (operands exp) env)))
@@ -255,7 +262,11 @@
     (define (scan vars vals)
       (cond ((null? vars)
              (env-loop (enclosing-environment env)))
-            ((eq? var (car vars)) (car vals))
+            ((eq? var (car vars))
+             (let ((value (car vals)))
+               (if (eq? value '*unassigned)
+                   (error "Unassigned variable" var)
+                   value)))
             (else (scan (cdr vars) (cdr vals)))))
     (if (eq? env the-empty-environment)
         (error "Unbound variable" var)
@@ -353,5 +364,27 @@
                      (procedure-body object)
                      '<procedure-env>))
       (display object)))
+
+; let syntax
+
+(define (let-definitions-clause exp)
+  (cadr exp))
+
+(define (let-body exp)
+  (cddr exp))
+
+(define (let-parameters definitions-clause)
+  (map car definitions-clause))
+
+(define (let-argument-expressions definitions-clause)
+  (map cadr definitions-clause))
+
+(define (let->combination exp)
+  (define definitions-clause (let-definitions-clause exp))
+  (cons (make-lambda (let-parameters definitions-clause) (let-body exp))
+	(let-argument-expressions definitions-clause)))
+
+(define (let? exp)
+  (tagged-list? exp 'let))
 
 (driver-loop)
